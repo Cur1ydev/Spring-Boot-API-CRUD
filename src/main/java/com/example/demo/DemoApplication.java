@@ -1,11 +1,11 @@
 package com.example.demo;
 
-import com.example.demo.controllers.HelloWorldController;
+import com.example.demo.controllers.api.CrudApi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-@Import(HelloWorldController.class)
+@Import(CrudApi.class)
 @SpringBootApplication
 
 
