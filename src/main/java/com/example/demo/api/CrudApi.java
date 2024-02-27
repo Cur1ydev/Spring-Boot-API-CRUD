@@ -1,4 +1,4 @@
-package com.example.demo.controllers.api;
+package com.example.demo.api;
 
 
 import com.example.demo.models.Product;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("api/v1/product")
 public class CrudApi {
     private final ProductRepository productRepository;
 
