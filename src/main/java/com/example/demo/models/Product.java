@@ -1,35 +1,26 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-@Setter
-@Getter
-@Table(name = "product")
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 
+@Data
+@Table(name = "product")
 @Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotEmpty(message = "Tên phaỉ được nhập")
     @Column(name = "name")
     private String name;
 
+    @Column(name = "image")
+    private String image;
+
+    @NotEmpty(message = "Mô tả phải được nhập")
     @Column(name = "description")
     private String description;
-    public Product(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
 
-    public Product() {
-
-    }
-
-
-    @Override
-    public String toString() {
-        return "Product{" + "id=" + id + ", name='" + name + '\'' + ", description=" + description + '}';
-    }
 }

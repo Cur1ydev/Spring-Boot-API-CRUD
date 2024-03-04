@@ -1,12 +1,233 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="https://www.thymeleaf.org/">
-<head>
-    <meta charset="UTF-8">
-    <title>Xin chào Lợi Xoăn</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<head th:replace="components/head :: head_tag">
 </head>
-<body>
-<h1 th:text="${message}"></h1>
-<a href="/product">Product</a>
+<body class="container" id="body">
+<div th:if="${errors}">[[${errors}]]</div>
+
+<header th:include="components/header :: header"></header>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add">Thêm mới
+</button>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Ảnh</th>
+        <th scope="col">Tên</th>
+        <th scope="col">Mô tả</th>
+        <th scope="col">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr th:each="product : ${products}">
+        <th>[[${product.id}]]</th>
+        <td><img src="" width="100px" alt=""/></td>
+        <td>[[${product.name}]]</td>
+        <td>[[${product.description}]]</td>
+        <td>
+            <button class="btn btn-warning e-item" th:data="${product.id}" data-bs-toggle="modal"
+                    data-bs-target="#edit">Sửa
+            </button>
+            <button class="btn btn-danger d-item" th:data="${product.id}" data-bs-toggle="modal"
+                    data-bs-target="#delete">Xoá
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div class="modal fade" id="add" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm mới</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="form" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Ảnh:</label>
+                        <input type="file" class="form-control" name="image">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Tên:</label>
+                        <input type="text" class="form-control" name="name" id="recipient-name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Mô tả:</label>
+                        <input type="text" class="form-control" name="description" id="message-text">
+                    </div>
+                    <div class="mb-3">
+                        <img src="" id="display-add" width="100%" alt="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="btn-add" class="btn btn-primary">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="edit" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Cập nhật</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="form-edit">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Tên:</label>
+                        <input type="text" class="form-control" name="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Mô tả:</label>
+                        <input type="text" class="form-control" name="description">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="btn-edit" class="btn btn-primary">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="sub-delete" class="btn btn-primary">Xoá</button>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:include="components/footer :: footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script>
+
+    $(document).ready(function () {
+        const objAdd = {
+            name: "",
+            description: "",
+            image: "",
+        };
+        const objEdit = {
+            name: "",
+            description: "",
+        }
+        $("#form input[name='name']").on("change", function () {
+            objAdd.name = $(this).val()
+        })
+        $("#form input[name='description']").on("change", function () {
+            objAdd.description = $(this).val()
+        })
+        $("#form input[name='image']").on("change", function (e) {
+            $("#display-add").attr("src", URL.createObjectURL(e.target.files[0]))
+            objAdd.image = e.target.files[0];
+        })
+        $("#btn-add").click(function (event) {
+            console.log("check obj",objAdd)
+            event.preventDefault();
+            $.ajax({
+                url: "/api/v1/product/store",
+                method: "post",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(objAdd),
+                success: (s) => {
+                    if (s.status) {
+                        alert(s.message);
+                        window.location.reload();
+                    } else
+                        alert(s.data)
+                },
+                error: (e) => {
+                    console.error(e)
+                    alert("Lỗi yêu cầu thất bại")
+                }
+            })
+        })
+        $(".e-item").click(function () {
+            let index = $(this).attr('data');
+            $.ajax({
+                url: "/api/v1/product/" + index,
+                method: "get",
+                success: (e) => {
+                    if (e.status) {
+                        objEdit.name = e.data.name;
+                        objEdit.description = e.data.description
+                        $("#form-edit input[name='name']").val(objEdit.name);
+                        $("#form-edit input[name='description']").val(objEdit.description);
+                        $("#form-edit input[name='name']").on("change", function () {
+                            objEdit.name = $(this).val()
+                        })
+                        $("#form-edit input[name='description']").on("change", function () {
+                            objEdit.description = $(this).val()
+                        })
+                        $("#btn-edit").click(function (event) {
+                            event.preventDefault();
+                            $.ajax({
+                                url: "/api/v1/product/update/" + index,
+                                method: "put",
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                dataType: "json",
+                                data: JSON.stringify(objEdit),
+                                success: (s) => {
+                                    if (s.status) {
+                                        alert(s.message);
+                                        window.location.reload();
+                                    } else
+                                        alert(s.data)
+                                },
+                                error: (e) => {
+                                    console.error(e)
+                                }
+                            })
+                        })
+                    } else {
+                        alert(e.message)
+                    }
+                }
+
+            })
+        })
+        $(".d-item").click(function () {
+            let index = $(this).attr('data');
+            $(".modal-body").html("Bạn có muốn xoa phần tử này ko?");
+            $("#sub-delete").click(function () {
+                $.ajax({
+                    url: "/api/v1/product/delete/" + index,
+                    method: "Delete",
+                    success: () => {
+                        window.location.reload();
+                    },
+                    error: (e) => {
+                        console.error(e)
+                    }
+                })
+            })
+        })
+    })
+</script>
 </body>
+
 </html>

@@ -1,3 +1,9 @@
 h1{
-    color: red;
+    color: red!important;
+}
+p{
+    color: orange;
+}
+footer{
+    text-align: center!important;
 }
