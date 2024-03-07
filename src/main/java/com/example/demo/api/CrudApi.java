@@ -4,10 +4,10 @@ package com.example.demo.api;
 import com.example.demo.models.Product;
 import com.example.demo.repositories.ProductRepository;
 import com.example.demo.response.ResponseAPI;
-import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
@@ -16,17 +16,27 @@ import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/product")
-public class CrudApi {
+public class CrudApi{
+
     private final ProductRepository productRepository;
 
-    public CrudApi(ProductRepository productRepository) {
+    CrudApi(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
+    private Boolean authenticate() {
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(Authentication::getName)
+                .filter(name -> !"anonymousUser".equals(name))
+                .isPresent();
+    }
 
     @GetMapping({"", "/"})
     ResponseEntity<ResponseAPI> getList() {
         try {
+            if (!authenticate()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseAPI(true, "Not User Login, Please Try Again!", ""));
+            }
             List<Product> product = productRepository.findAll();
             return !product.isEmpty() ? ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(true, "Truy vấn thành công", product)) : ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(true, "Không có bản ghi nào", product));
         } catch (Throwable throwable) {
@@ -89,6 +99,12 @@ public class CrudApi {
         } catch (Throwable throwable) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(false, "đã có lỗi xảy ra", throwable.getMessage()));
         }
+    }
+
+    @GetMapping("/detail")
+    String detail() {
+        return "123";
+//        return ResponseEntity.ok(new ResponseAPI(true, "query user success",""));
     }
 
 
